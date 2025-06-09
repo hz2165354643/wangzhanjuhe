@@ -1,0 +1,67 @@
+{
+  "name": "全球成人网站聚合平台",
+  "short_name": "网站聚合器",
+  "description": "全球领先的网站聚合平台，集成优质网站资源，支持实时全球同步、智能分类、快速搜索。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e1b4b",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "utilities", "navigation"],
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshot-narrow.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "添加网站",
+      "short_name": "添加",
+      "description": "快速添加新网站到收藏",
+      "url": "/?action=add",
+      "icons": [
+        {
+          "src": "/shortcut-add.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "搜索网站",
+      "short_name": "搜索",
+      "description": "搜索已收藏的网站",
+      "url": "/?action=search",
+      "icons": [
+        {
+          "src": "/shortcut-search.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

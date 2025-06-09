@@ -1,0 +1,96 @@
+{
+  "websites": [
+    {
+      "id": "1",
+      "name": "石头割草模拟器",
+      "url": "https://stonegrasssimulator.com",
+      "favicon": "https://stonegrasssimulator.com/favicon.ico",
+      "category": "游戏娱乐",
+      "isFavorite": true,
+      "color": "#10b981",
+      "visitCount": 0,
+      "tags": ["游戏", "模拟器", "休闲"],
+      "description": "一个有趣的石头割草模拟游戏",
+      "randomClicks": 756
+    },
+    {
+      "id": "2",
+      "name": "GitHub",
+      "url": "https://github.com",
+      "favicon": "https://github.com/favicon.ico",
+      "category": "开发工具",
+      "isFavorite": true,
+      "color": "#6366f1",
+      "visitCount": 0,
+      "tags": ["代码", "开源", "协作"],
+      "description": "全球最大的代码托管平台",
+      "randomClicks": 823
+    },
+    {
+      "id": "3",
+      "name": "Stack Overflow",
+      "url": "https://stackoverflow.com",
+      "favicon": "https://stackoverflow.com/favicon.ico",
+      "category": "开发工具",
+      "isFavorite": false,
+      "color": "#f97316",
+      "visitCount": 0,
+      "tags": ["问答", "编程", "技术"],
+      "description": "程序员问答社区",
+      "randomClicks": 692
+    },
+    {
+      "id": "4",
+      "name": "Dribbble",
+      "url": "https://dribbble.com",
+      "favicon": "https://dribbble.com/favicon.ico",
+      "category": "设计资源",
+      "isFavorite": true,
+      "color": "#ec4899",
+      "visitCount": 0,
+      "tags": ["设计", "创意", "灵感"],
+      "description": "设计师作品展示平台",
+      "randomClicks": 567
+    },
+    {
+      "id": "5",
+      "name": "Unsplash",
+      "url": "https://unsplash.com",
+      "favicon": "https://unsplash.com/favicon.ico",
+      "category": "设计资源",
+      "isFavorite": false,
+      "color": "#06b6d4",
+      "visitCount": 0,
+      "tags": ["图片", "摄影", "免费"],
+      "description": "高质量免费图片库",
+      "randomClicks": 734
+    },
+    {
+      "id": "6",
+      "name": "YouTube",
+      "url": "https://youtube.com",
+      "favicon": "https://youtube.com/favicon.ico",
+      "category": "娱乐媒体",
+      "isFavorite": false,
+      "color": "#ef4444",
+      "visitCount": 0,
+      "tags": ["视频", "娱乐", "学习"],
+      "description": "全球最大的视频分享平台",
+      "randomClicks": 891
+    }
+  ],
+  "settings": {
+    "theme": "cosmic",
+    "defaultView": "grid",
+    "autoSave": true,
+    "showVisitCount": true,
+    "enableAnimations": true
+  },
+  "metadata": {
+    "totalWebsites": 6,
+    "totalCategories": 3,
+    "favoriteCount": 3,
+    "lastUpdate": "2024-12-19T10:30:00.000Z",
+    "version": "1.0.0"
+  }
+}

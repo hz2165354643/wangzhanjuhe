@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+
+# 优化爬虫抓取
+Crawl-delay: 1
+
+# 站点地图
+Sitemap: https://website-aggregator.com/sitemap.xml
+
+# 禁止抓取的路径
+Disallow: /admin/
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*?*
+
+# 允许抓取的重要页面
+Allow: /
+Allow: /websites/
+Allow: /categories/
+Allow: /popular/
+Allow: /recent/
+
+# 针对特定搜索引擎的优化
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
