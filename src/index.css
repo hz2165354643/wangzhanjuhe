@@ -618,3 +618,24 @@ body {
     font-size: 0.6rem;
   }
 }
+
+.website-views {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.75rem;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 2px 6px;
+  border-radius: 3px;
+  backdrop-filter: blur(4px);
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+.view-icon {
+  opacity: 0.8;
+}

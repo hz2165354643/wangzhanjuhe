@@ -9,7 +9,8 @@ import {
   X,
   Menu,
   Filter,
-  AlertTriangle
+  AlertTriangle,
+  Eye
 } from 'lucide-react';
 import { Website, AppSettings, SearchHistory } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -193,7 +194,29 @@ function App() {
       setImportExportMessage('导出失败，请重试');
     }
   };
-  
+
+  // 在 useEffect 中为每个网站生成随机访问量
+  useEffect(() => {
+    const updatedWebsites = websites.map(website => {
+      // 如果已有随机点击数，则保留
+      if (website.randomClicks) return website;
+      
+      // 生成一个不含0的四位随机数
+      let randomNum;
+      do {
+        // 生成1000-9999之间的随机数
+        randomNum = Math.floor(Math.random() * (9999 - 1000 + 1) + 1000);
+        // 检查数字中是否包含0
+      } while (randomNum.toString().includes('0'));
+      
+      return {
+        ...website,
+        randomClicks: randomNum
+      };
+    });
+    setWebsites(updatedWebsites);
+  }, []);
+
   // 下面添加实际的界面渲染
   return (
     <div className="full-app-container">
@@ -319,6 +342,10 @@ function App() {
               </div>
               <div className="website-card-footer">
                 <div className="category-tag">{website.category || '未分类'}</div>
+                <div className="website-views">
+                  <Eye size={12} className="view-icon" />
+                  <span>{(website.randomClicks || 0)}w</span>
+                </div>
                 <div>
                   <button 
                     className={`favorite-button ${website.isFavorite ? 'active' : ''}`}
