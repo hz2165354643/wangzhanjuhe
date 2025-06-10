@@ -54,7 +54,7 @@ const themeClasses = {
 };
 
 function App() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [darkMode, setDarkMode] = useState(true);
   
   useEffect(() => {
@@ -67,9 +67,8 @@ function App() {
 
   // 设置默认语言为英文
   useEffect(() => {
-    const { i18n } = useTranslation();
     i18n.changeLanguage('en');
-  }, []);
+  }, [i18n]);
 
   // 语言设置
   const { language, setLanguage } = useLanguage();
