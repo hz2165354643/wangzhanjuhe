@@ -2,64 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   Plus, 
-  Grid3X3, 
-  List, 
   Star, 
-  ExternalLink, 
   Settings, 
-  Palette, 
-  BarChart3, 
   Download, 
   Upload, 
-  FileText,
-  Shield,
-  Gamepad2,
-  Heart,
-  Eye as EyeIcon,
-  EyeOff,
-  Trash2,
-  Edit3,
-  Save,
   X,
-  Check,
-  AlertCircle,
-  RefreshCw,
-  Globe
+  Menu,
+  Filter,
+  AlertTriangle
 } from 'lucide-react';
 import { Website, AppSettings, SearchHistory } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { useLanguage } from './hooks/useLanguage';
-import { ThemeSelector } from './components/ThemeSelector';
-import { WebsiteStats } from './components/WebsiteStats';
-import { AdminDashboard } from './components/AdminDashboard';
-import { AdminLogin } from './components/AdminLogin';
-import { CloudSync } from './components/CloudSync';
-import { RealtimeSync } from './components/RealtimeSync';
-import { DataSharing } from './components/DataSharing';
-import { GitHubRepoSync } from './components/GitHubRepoSync';
-import { DataFileManager } from './components/DataFileManager';
-import { LanguageSelector } from './components/LanguageSelector';
 import { websitesData, defaultSettings } from './data/websites';
-import { getTranslation } from './i18n';
-import LogoLady from './components/LogoLady';
 import { useTranslation } from 'react-i18next';
 import Icon from './assets/icon';
-
-// 主题配置
-const themeClasses = {
-  cosmic: 'bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900',
-  ocean: 'bg-gradient-to-br from-blue-900 via-cyan-900 to-teal-900',
-  forest: 'bg-gradient-to-br from-green-900 via-emerald-900 to-teal-900',
-  sunset: 'bg-gradient-to-br from-orange-900 via-red-900 to-pink-900'
-};
 
 // 导出图标组件以供其他地方使用
 export const AppIcon = Icon;
 
 function App() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [darkMode, setDarkMode] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
@@ -69,21 +34,18 @@ function App() {
     return Math.floor(Math.random() * (9000 - 500 + 1) + 500) + 'w';
   };
 
-  // 设置默认语言为英文
+  // 设置默认语言为中文
   useEffect(() => {
-    i18n.changeLanguage('en');
+    i18n.changeLanguage('zh-CN');
   }, [i18n]);
-
-  // 语言设置
-  const { language, setLanguage } = useLanguage();
 
   // 状态管理
   const [websites, setWebsites] = useLocalStorage<Website[]>('websites', websitesData);
   const [settings, setSettings] = useLocalStorage<AppSettings>('settings', defaultSettings);
   const [searchHistory, setSearchHistory] = useLocalStorage<SearchHistory[]>('searchHistory', []);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>(t('all'));
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>(settings.defaultView);
+  const [selectedCategory, setSelectedCategory] = useState<string>('全部');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [isAddingWebsite, setIsAddingWebsite] = useState(false);
   const [editingWebsite, setEditingWebsite] = useState<Website | null>(null);
@@ -111,14 +73,14 @@ function App() {
   });
 
   // 获取分类列表
-  const categories = [t('all'), ...Array.from(new Set(websites.map(w => w.category).filter(Boolean)))];
+  const categories = ['全部', ...Array.from(new Set(websites.map(w => w.category).filter(Boolean) as string[]))];
 
   // 过滤网站
   const filteredWebsites = websites.filter(website => {
     const matchesSearch = website.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          website.url.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (website.tags && website.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())));
-    const matchesCategory = selectedCategory === t('all') || website.category === selectedCategory;
+    const matchesCategory = selectedCategory === '全部' || website.category === selectedCategory;
     const matchesFavorites = !showFavoritesOnly || website.isFavorite;
     return matchesSearch && matchesCategory && matchesFavorites;
   });
@@ -176,7 +138,7 @@ function App() {
         name: newWebsite.name,
         url: newWebsite.url.startsWith('http') ? newWebsite.url : `https://${newWebsite.url}`,
         favicon: `${new URL(newWebsite.url.startsWith('http') ? newWebsite.url : `https://${newWebsite.url}`).origin}/favicon.ico`,
-        category: newWebsite.category || t('uncategorized'),
+        category: newWebsite.category || '未分类',
         description: newWebsite.description,
         tags: newWebsite.tags ? newWebsite.tags.split(',').map(tag => tag.trim()) : [],
         isFavorite: false,
@@ -192,57 +154,20 @@ function App() {
 
   // 删除网站
   const deleteWebsite = (id: string) => {
-    if (confirm(t('confirmDelete'))) {
+    if (confirm('确定要删除这个网站吗？')) {
       setWebsites(prev => prev.filter(w => w.id !== id));
     }
   };
 
-  // 编辑网站
-  const saveEditedWebsite = (updatedWebsite: Website) => {
-    setWebsites(prev => prev.map(w => w.id === updatedWebsite.id ? updatedWebsite : w));
-    setEditingWebsite(null);
-  };
-
-  // 管理员登录
-  const handleAdminLogin = (password: string) => {
-    if (password === adminPassword) {
-      setIsAdminAuthenticated(true);
-      setShowAdminLogin(false);
-      setShowAdminDashboard(true);
-      setAdminLoginError('');
-    } else {
-      setAdminLoginError(t('incorrectPassword'));
-    }
-  };
-
-  // 管理员登出
-  const handleAdminLogout = () => {
-    setIsAdminAuthenticated(false);
-    setShowAdminDashboard(false);
-  };
-
-  // 修改管理员密码
-  const changeAdminPassword = (newPassword: string) => {
-    setAdminPassword(newPassword);
-  };
-
   // 导出数据
   const exportData = () => {
-    setImportExportStatus('exporting');
-    
     try {
       const exportData = {
         websites,
         settings,
         searchHistory,
         exportDate: new Date().toISOString(),
-        version: '1.0.0',
-        metadata: {
-          totalWebsites: websites.length,
-          totalCategories: categories.length - 1, // 减去"全部"
-          totalVisits: websites.reduce((sum, w) => sum + (w.visitCount || 0), 0),
-          favoriteCount: websites.filter(w => w.isFavorite).length
-        }
+        version: '1.0.0'
       };
       
       const dataStr = JSON.stringify(exportData, null, 2);
@@ -250,194 +175,242 @@ function App() {
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `网站聚合器-完整备份-${new Date().toISOString().split('T')[0]}.json`;
+      link.download = `网站聚合器备份-${new Date().toISOString().split('T')[0]}.json`;
       link.click();
       URL.revokeObjectURL(url);
       
       setImportExportStatus('success');
-      setImportExportMessage(t('exportSuccess'));
-    } catch (error) {
-      setImportExportStatus('error');
-      setImportExportMessage(t('exportFailed'));
-    }
-    
-    setTimeout(() => {
-      setImportExportStatus('idle');
-      setImportExportMessage('');
-    }, 3000);
-  };
-
-  // 导入数据
-  const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setImportExportStatus('importing');
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const importedData = JSON.parse(e.target?.result as string);
-        
-        // 验证数据格式
-        if (!importedData.websites || !Array.isArray(importedData.websites)) {
-          throw new Error('无效的数据格式');
-        }
-        
-        // 询问是否替换现有数据
-        const shouldReplace = confirm(t('replaceData'));
-        
-        if (shouldReplace) {
-          // 替换所有数据
-          setWebsites(importedData.websites);
-          if (importedData.settings) setSettings(importedData.settings);
-          if (importedData.searchHistory) setSearchHistory(importedData.searchHistory);
-        } else {
-          // 合并数据，避免ID冲突
-          const existingIds = new Set(websites.map(w => w.id));
-          const newWebsites = importedData.websites.filter((w: Website) => !existingIds.has(w.id));
-          setWebsites(prev => [...prev, ...newWebsites]);
-        }
-        
-        setImportExportStatus('success');
-        setImportExportMessage(`${t('importSuccess')} ${importedData.websites.length} ${t('websites')}`);
-      } catch (error) {
-        setImportExportStatus('error');
-        setImportExportMessage(t('importFailed'));
-      }
-    };
-    
-    reader.readAsText(file);
-    
-    setTimeout(() => {
-      setImportExportStatus('idle');
-      setImportExportMessage('');
-    }, 3000);
-  };
-
-  // 键盘快捷键
-  useKeyboardShortcuts([
-    { key: 'k', ctrlKey: true, action: () => document.getElementById('search')?.focus() },
-    { key: 'n', ctrlKey: true, action: () => setIsAddingWebsite(true) },
-    { key: 'f', ctrlKey: true, action: () => setShowFavoritesOnly(!showFavoritesOnly) },
-    { key: 'g', ctrlKey: true, action: () => setViewMode('grid') },
-    { key: 'l', ctrlKey: true, action: () => setViewMode('list') },
-    { key: 'e', ctrlKey: true, action: exportData },
-    { key: 'a', ctrlKey: true, shiftKey: true, action: () => setShowAdminLogin(true) }
-  ]);
-
-  // 点击外部关闭下拉菜单
-  useEffect(() => {
-    const handleClickOutside = () => setOpenDropdown(null);
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
-
-  // 检查URL参数中的导入数据
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const importData = urlParams.get('import');
-    
-    if (importData) {
-      try {
-        const decodedData = JSON.parse(atob(importData));
-        if (decodedData.websites && Array.isArray(decodedData.websites)) {
-          const shouldImport = confirm(t('detectSharedData'));
-          if (shouldImport) {
-            setWebsites(decodedData.websites);
-            if (decodedData.settings) setSettings(decodedData.settings);
-          }
-        }
-      } catch (error) {
-        console.error('导入分享数据失败:', error);
-      }
+      setImportExportMessage('数据导出成功！');
       
-      // 清除URL参数
-      window.history.replaceState({}, document.title, window.location.pathname);
+      // 3秒后重置状态
+      setTimeout(() => {
+        setImportExportStatus('idle');
+        setImportExportMessage('');
+      }, 3000);
+    } catch (error) {
+      console.error('导出数据失败:', error);
+      setImportExportStatus('error');
+      setImportExportMessage('导出失败，请重试');
     }
-  }, []);
-
-  const isGameWebsite = (website: Website) => {
-    return website.category === '游戏娱乐' && 
-           (website.tags?.includes('游戏') || website.url.includes('game'));
   };
-
+  
+  // 下面添加实际的界面渲染
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-primary-gradient-from to-primary-gradient-to dark:from-gray-900 dark:to-gray-800 transition-colors duration-500`}>
-      <div className="container mx-auto px-4 py-8">
-        <header className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <LogoLady className="w-12 h-12" />
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
-              全球top网
-            </h1>
+    <div className="full-app-container">
+      {/* 顶部导航栏 */}
+      <div className="top-navbar">
+        <div className="logo-container">
+          <div className="logo-icon">
+            <AlertTriangle size={24} className="age-restricted-icon" color="#ff3a3a" />
+          </div>
+          <div className="logo-text">
+            <span className="premium-title">Global Free Adult web Top List<span className="highlight-text"></span></span>
+            <div className="subtitle">全球免费成人网站top榜</div>
+          </div>
+        </div>
+        
+        <div className="top-controls">
+          <div className="search-container">
+            <Search size={16} />
+            <input 
+              type="text" 
+              placeholder="搜索网站..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
           </div>
           
-          <div className="flex items-center space-x-6">
-            <h2 className="text-2xl font-semibold text-white">一家免费的电影院</h2>
-            <div className="flex items-center space-x-4">
-              <ThemeSelector 
-                currentTheme={settings.theme}
-                onThemeChange={(theme) => updateSettings({ theme })}
-                isOpen={openDropdown === 'theme'}
-                onToggle={() => setOpenDropdown(openDropdown === 'theme' ? null : 'theme')}
-                darkMode={darkMode}
-                setDarkMode={setDarkMode}
-              />
-              <WebsiteStats websites={websites} isOpen={openDropdown === 'stats'} onToggle={() => setOpenDropdown(openDropdown === 'stats' ? null : 'stats')} />
-              <DataSharing 
-                websites={websites}
-                setWebsites={setWebsites}
-                settings={settings}
-                updateSettings={updateSettings}
-                isOpen={openDropdown === 'share'}
-                onToggle={() => setOpenDropdown(openDropdown === 'share' ? null : 'share')}
-              />
-              <GitHubRepoSync 
-                websites={websites}
-                setWebsites={setWebsites}
-                settings={settings}
-                updateSettings={updateSettings}
-                isOpen={openDropdown === 'github'}
-                onToggle={() => setOpenDropdown(openDropdown === 'github' ? null : 'github')}
-              />
-              <LanguageSelector 
-                currentLanguage={language}
-                onLanguageChange={setLanguage}
-                isOpen={openDropdown === 'language'}
-                onToggle={() => setOpenDropdown(openDropdown === 'language' ? null : 'language')}
-              />
+          <div className="category-filter" onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}>
+            <div className="selected-category">
+              <Filter size={16} />
+              <span>{selectedCategory}</span>
             </div>
-          </div>
-        </header>
-
-        <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {websites.map((site, index) => (
-            <div key={site.id} 
-                 className="glass-morphism rounded-xl p-4 transform hover:scale-105 transition-all duration-300 animate-fade-in"
-                 style={{animationDelay: `${index * 0.1}s`}}>
-              <div className="relative h-40 mb-4 overflow-hidden rounded-lg">
-                <img src={site.favicon} alt={site.name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black bg-opacity-30 transition-opacity duration-300 hover:bg-opacity-0" />
+            
+            {showCategoryDropdown && (
+              <div className="category-dropdown">
+                <div 
+                  className={`category-item ${selectedCategory === '全部' ? 'active' : ''}`}
+                  onClick={() => {
+                    setSelectedCategory('全部');
+                    setShowCategoryDropdown(false);
+                  }}
+                >
+                  全部 <span className="count">{websites.length}</span>
+                </div>
+                <div 
+                  className={`category-item ${showFavoritesOnly ? 'active' : ''}`}
+                  onClick={() => {
+                    setShowFavoritesOnly(!showFavoritesOnly);
+                    setShowCategoryDropdown(false);
+                  }}
+                >
+                  收藏 <span className="count">{websites.filter(w => w.isFavorite).length}</span>
+                </div>
+                {categories.filter(c => c !== '全部').map(category => (
+                  <div 
+                    key={category}
+                    className={`category-item ${selectedCategory === category ? 'active' : ''}`}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setShowCategoryDropdown(false);
+                    }}
+                  >
+                    {category} <span className="count">{websites.filter(w => w.category === category).length}</span>
+                  </div>
+                ))}
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">{site.name}</h3>
-              <p className="text-gray-300 mb-4">{site.description}</p>
-              <div className="flex items-center justify-between">
-                <a href={site.url} 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   className="px-4 py-2 bg-gradient-to-r from-pink-500 to-violet-500 text-white rounded-lg hover:opacity-90 transition-opacity">
-                  访问
-                </a>
-                <div className="flex items-center text-gray-300">
-                  <EyeIcon className="w-5 h-5 mr-1" />
-                  <span>{generateRandomViews()}</span>
+            )}
+          </div>
+          
+          <button className="add-button" onClick={() => setIsAddingWebsite(true)}>
+            <Plus size={20} />
+          </button>
+          
+          <div className="actions-menu">
+            <Settings size={16} onClick={() => setOpenDropdown(openDropdown ? null : 'settings')} />
+            
+            {openDropdown === 'settings' && (
+              <div className="dropdown-menu">
+                <div className="dropdown-item" onClick={exportData}>
+                  <Download size={16} />
+                  <span>导出数据</span>
+                </div>
+                <div className="dropdown-item">
+                  <Upload size={16} />
+                  <span>导入数据</span>
+                </div>
+                <div className="dropdown-item">
+                  <Settings size={16} />
+                  <span>设置</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 主内容区 */}
+      <div className="main-content-full">
+        <div className="website-grid">
+          {filteredWebsites.map(website => (
+            <div 
+              key={website.id} 
+              className="website-card"
+              onClick={() => visitWebsite(website)}
+            >
+              <div className="website-card-header">
+                <div className="website-icon">
+                  {website.favicon ? (
+                    <img src={website.favicon} alt="" onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }} />
+                  ) : (
+                    <div style={{ fontSize: '16px' }}>{website.name.charAt(0)}</div>
+                  )}
+                </div>
+                <div>
+                  <div className="website-name">{website.name}</div>
+                  <div className="website-url">{website.url}</div>
+                </div>
+              </div>
+              <div className="website-card-body">
+                <div className="website-description">{website.description}</div>
+              </div>
+              <div className="website-card-footer">
+                <div className="category-tag">{website.category || '未分类'}</div>
+                <div>
+                  <button 
+                    className={`favorite-button ${website.isFavorite ? 'active' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(website.id);
+                    }}
+                  >
+                    <Star size={16} fill={website.isFavorite ? '#f8c732' : 'none'} />
+                  </button>
                 </div>
               </div>
             </div>
           ))}
-        </main>
+        </div>
       </div>
+
+      {/* 添加网站对话框 */}
+      {isAddingWebsite && (
+        <div className="modal-overlay" onClick={() => setIsAddingWebsite(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>添加新网站</h2>
+              <button className="close-button" onClick={() => setIsAddingWebsite(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label>网站名称</label>
+                <input
+                  type="text"
+                  value={newWebsite.name}
+                  onChange={e => setNewWebsite({ ...newWebsite, name: e.target.value })}
+                  placeholder="例如：Google"
+                />
+              </div>
+              <div className="form-group">
+                <label>网站地址</label>
+                <input
+                  type="text"
+                  value={newWebsite.url}
+                  onChange={e => setNewWebsite({ ...newWebsite, url: e.target.value })}
+                  placeholder="例如：https://google.com"
+                />
+              </div>
+              <div className="form-group">
+                <label>分类</label>
+                <input
+                  type="text"
+                  value={newWebsite.category}
+                  onChange={e => setNewWebsite({ ...newWebsite, category: e.target.value })}
+                  placeholder="例如：搜索引擎"
+                />
+              </div>
+              <div className="form-group">
+                <label>描述</label>
+                <textarea
+                  value={newWebsite.description}
+                  onChange={e => setNewWebsite({ ...newWebsite, description: e.target.value })}
+                  placeholder="简单描述这个网站..."
+                />
+              </div>
+              <div className="form-group">
+                <label>标签</label>
+                <input
+                  type="text"
+                  value={newWebsite.tags}
+                  onChange={e => setNewWebsite({ ...newWebsite, tags: e.target.value })}
+                  placeholder="用逗号分隔，例如：搜索,工具,资讯"
+                />
+              </div>
+              <div className="form-group">
+                <label>主题色</label>
+                <input
+                  type="color"
+                  value={newWebsite.color}
+                  onChange={e => setNewWebsite({ ...newWebsite, color: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="cancel-button" onClick={() => setIsAddingWebsite(false)}>
+                取消
+              </button>
+              <button className="submit-button" onClick={handleAddWebsite}>
+                添加
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
