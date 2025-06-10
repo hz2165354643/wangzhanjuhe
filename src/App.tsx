@@ -15,7 +15,7 @@ import {
   Shield,
   Gamepad2,
   Heart,
-  Eye,
+  Eye as EyeIcon,
   EyeOff,
   Trash2,
   Edit3,
@@ -44,7 +44,6 @@ import { websitesData, defaultSettings } from './data/websites';
 import { getTranslation } from './i18n';
 import LogoLady from './components/LogoLady';
 import { useTranslation } from 'react-i18next';
-import { EyeIcon } from '@heroicons/react/24/outline';
 
 // 主题配置
 const themeClasses = {
