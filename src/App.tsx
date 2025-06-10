@@ -44,6 +44,7 @@ import { websitesData, defaultSettings } from './data/websites';
 import { getTranslation } from './i18n';
 import LogoLady from './components/LogoLady';
 import { useTranslation } from 'react-i18next';
+import Icon from './assets/icon';
 
 // 主题配置
 const themeClasses = {
@@ -52,6 +53,9 @@ const themeClasses = {
   forest: 'bg-gradient-to-br from-green-900 via-emerald-900 to-teal-900',
   sunset: 'bg-gradient-to-br from-orange-900 via-red-900 to-pink-900'
 };
+
+// 导出图标组件以供其他地方使用
+export const AppIcon = Icon;
 
 function App() {
   const { t, i18n } = useTranslation();
